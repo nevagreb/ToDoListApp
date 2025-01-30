@@ -8,15 +8,18 @@
 import SwiftUI
 
 // структура - вью строки ToDo-листа
-struct ToDoItemView: View {
+struct ToDoRowView: View {
     let note: NotesList.Note
     let tapAction: ()->Void
     
     var body: some View {
         HStack(alignment: .top) {
             // иконка
-            Image(note.isSelected ?
+            Image(note.isDone ?
                   Const.Icons.selectedCheckmark : Const.Icons.unselectedCheckmark)
+            .onTapGesture {
+                tapAction()
+            }
             
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
@@ -30,16 +33,17 @@ struct ToDoItemView: View {
                         .lineLimit(2)
                         .padding(.bottom, Const.Layout.padding)
                 }
-                .opacity(note.isSelected ? 0.5 : 1)
+                .opacity(note.isDone ? 0.5 : 1)
                 // дата форматированная в краткую
                 Text(note.date.formattedAsShortDate())
                     .font(Const.Text.bodyFont)
                     .opacity(0.5)
             }
+            Spacer()
         }
-        .onTapGesture {
-            tapAction()
-        }
+        // используется для того, чтобы сделать всю
+        // область HStack кликабельной
+        .contentShape(Rectangle())
     }
     
     // функция создания перечеркнутого текста
@@ -47,7 +51,7 @@ struct ToDoItemView: View {
     // для создания перечеркнутого текста используется AttributedString
     private func attributedTitle(of note: NotesList.Note) -> AttributedString {
         var text = AttributedString(note.title)
-        if note.isSelected {
+        if note.isDone {
             text.strikethroughStyle = .single
             text.strikethroughColor = .gray
         }

@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct ToDoListApp: App {
+    @StateObject var router = Router()
+    
     var body: some Scene {
         WindowGroup {
-            ToDoListView()
+            HomeScreen(router: router)
                 .preferredColorScheme(.dark)
         }
     }

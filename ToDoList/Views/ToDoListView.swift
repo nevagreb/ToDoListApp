@@ -7,29 +7,41 @@
 
 import SwiftUI
 
-// структура - вью ToDo-листа
+// структура - вью списка задач
 struct ToDoListView: View {
-    @StateObject private var toDoList = ToDoList()
+    @EnvironmentObject var toDoList: ToDoList
     @State private var searchText = ""
+    @State var shareText: ShareText?
     
     var body: some View {
-        NavigationView {
-            listOfToDos
-                .navigationTitle(Const.Layout.title)
-                .safeAreaInset(edge: .bottom) {
-                    bottomBar
-                }
-        }
-        .searchable(text: $searchText,
-                    placement: .toolbar)
+        listOfToDos
+            .navigationTitle(Const.Layout.titleText)
+            .safeAreaInset(edge: .bottom) {
+                bottomBar
+            }
+            .sheet(item: $shareText, 
+                   content: { shareText in ActivityView(text: shareText.text) })
+            .searchable(text: $searchText,
+                        placement: .toolbar)
     }
     
     // список задач
     private var listOfToDos: some View {
         List {
             ForEach(toDoList.notes) { note in
-                ToDoItemView(note: note,
-                             tapAction: { selectNote(with: note.id) })
+                ToDoRowView(note: note,
+                            tapAction: { markAsDone(with: note.id) })
+                .onTapGesture(count: 1) {
+                    toDoList.navigate(to: note)
+                }
+                .contextMenu {
+                    ContexMenuButton(type: .edit,
+                                     action: { toDoList.navigate(to: note) })
+                    ContexMenuButton(type: .share,
+                                     action: { share(with: note.id) })
+                    ContexMenuButton(type: .delete,
+                                     action: { toDoList.delete(with: note.id) })
+                }
             }
         }
         .listStyle(.plain)
@@ -44,7 +56,6 @@ struct ToDoListView: View {
                 Spacer()
             }
             newNoteButton
-            
         }
         .padding()
         .background(Const.Colors.backgroundColor)
@@ -54,19 +65,20 @@ struct ToDoListView: View {
     private var newNoteButton: some View {
         HStack {
             Spacer()
-            Button(action: {}) {
+            Button(action: toDoList.navigateToNew) {
                 Image(Const.Icons.newNote)
             }
         }
     }
     
     // функция выбора задачи
-    private func selectNote(with id: UUID) {
-        toDoList.selectNote(with: id)
+    private func markAsDone(with id: UUID) {
+        toDoList.markAsDone(with: id)
+    }
+    
+    // функция поделиться задачей
+    private func share(with id: UUID) {
+        shareText = ShareText(text: toDoList.returnNoteAsText(with: id))
     }
 }
 
-#Preview {
-    ToDoListView()
-        .preferredColorScheme(.dark)
-}
