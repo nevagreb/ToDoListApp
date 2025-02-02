@@ -21,6 +21,7 @@ struct ToDoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: backButton)
+        .toolbar { keyboardDoneButton }
         .onAppear(perform: showNote)
         .onDisappear(perform: saveChanges)
     }
@@ -37,6 +38,8 @@ struct ToDoView: View {
                 .padding(.bottom, Const.Layout.largePadding)
             noteText
         }
+        .keyboardType(.alphabet)
+        .disableAutocorrection(true)
         .padding()
     }
     
@@ -48,6 +51,7 @@ struct ToDoView: View {
                     .foregroundColor(Color(uiColor: .placeholderText))
             }
             TextEditor(text: $description)
+                .lineLimit(nil)
                 .opacity(description.isEmpty ? 0.1 : 1)
         }
         .font(Const.Text.titleFont)
@@ -64,6 +68,18 @@ struct ToDoView: View {
         }
     }
     
+    // кнопка Done для клавиатуры
+    private var keyboardDoneButton: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button(action: { hideKeyboard() }) {
+                Text("Done")
+                    .foregroundColor(Color.yellow)
+                    .font(.body)
+            }
+        }
+    }
+    
     // проверка на пустоту полей после редактирования
     private var isNoteEmpty: Bool {
         title.isEmpty && description.isEmpty
@@ -75,27 +91,18 @@ struct ToDoView: View {
         description = note.text
     }
     
-    // функция сохранения измнений
+    // функция сохранения изменений
     private func saveChanges() {
         if isNoteEmpty {
             delete()
         } else {
             edit()
         }
-        do {
-            try note.managedObjectContext?.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
     }
     
     // функция удаления заметки
     private func delete() {
-        withAnimation {
-            managedObjectContext.delete(note)
-            managedObjectContext.saveContext()
-        }
+        managedObjectContext.delete(note: note)
     }
         
     // функция редактирования заметки

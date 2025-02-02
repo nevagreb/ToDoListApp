@@ -11,5 +11,5 @@ import CoreData
 
 @objc(ToDoNote)
 public class ToDoNote: NSManagedObject {
-
+    
 }

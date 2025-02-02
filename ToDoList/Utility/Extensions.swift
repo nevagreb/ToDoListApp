@@ -37,6 +37,7 @@ extension Int {
         }
     }
 }
+
 // extension используется для иницииализации цвета
 // по шестнадцатеричному коду (hex)
 extension Color {
@@ -52,5 +53,12 @@ extension Color {
         let g = Double((rgb >> 8) & 0xFF) / 255.0
         let b = Double(rgb & 0xFF) / 255.0
         self.init(red: r, green: g, blue: b)
+    }
+}
+
+// функция используется для скрытия клавиатуры
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

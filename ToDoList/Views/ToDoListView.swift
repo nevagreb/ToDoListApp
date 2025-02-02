@@ -9,14 +9,27 @@ import SwiftUI
 
 // структура - вью списка задач
 struct ToDoListView: View {
-    @FetchRequest(sortDescriptors: [SortDescriptor(\.wrappedTitle)])
-        var todos: FetchedResults<ToDoNote>
+    @FetchRequest(sortDescriptors: [SortDescriptor(\ToDoNote.wrappedDate, order: .reverse)])
+        private var todos: FetchedResults<ToDoNote>
     
     @EnvironmentObject var toDoList: ToDoList
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @State private var searchText = ""
     @State var shareText: ShareText?
+    
+    var query: Binding<String> {
+        Binding {
+            searchText
+        } set: { newValue in
+            let p1 = NSPredicate(format: "wrappedTitle CONTAINS %@", newValue)
+            let p2 = NSPredicate(format: "wrappedText CONTAINS %@", newValue)
+            searchText = newValue
+            todos.nsPredicate = newValue.isEmpty
+            ? nil
+            : NSCompoundPredicate(orPredicateWithSubpredicates: [p1, p2])
+        }
+    }
 
     var body: some View {
         VStack {
@@ -28,8 +41,10 @@ struct ToDoListView: View {
             }
         }
         .navigationTitle(Const.Layout.titleText)
-        .searchable(text: $searchText,
+        .searchable(text: query,
                     placement: .toolbar)
+        .keyboardType(.alphabet)
+        .disableAutocorrection(true)
         .safeAreaInset(edge: .bottom) {
             bottomBar
         }
@@ -85,9 +100,7 @@ struct ToDoListView: View {
     // функция создания новой заметки
     private func addNote() {
         withAnimation {
-            let newNote = ToDoNote(context: managedObjectContext)
-            newNote.createEmptyNote()
-            managedObjectContext.saveContext()
+            let newNote = managedObjectContext.addNewNote()
             toDoList.navigate(to: newNote)
         }
     }
@@ -100,10 +113,7 @@ struct ToDoListView: View {
     
     // функция добавления в МОК загруженных с сервера задач
     func addNotesFromServer() {
-        toDoList.notesList.notes.forEach {
-            let newNote = ToDoNote(context: managedObjectContext)
-            newNote.addInfo(from: $0)
-        }
+        managedObjectContext.addNotesFromServer(toDoList.notesList)
     }
 }
 

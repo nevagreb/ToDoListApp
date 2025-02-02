@@ -72,6 +72,7 @@
 				63247DB72D4FFD9A004883FB /* Persistence.swift */,
 				63247DC12D5002E6004883FB /* ToDoNote+CoreDataClass.swift */,
 				63247DC22D5002E6004883FB /* ToDoNote+CoreDataProperties.swift */,
+				63247DC52D50072E004883FB /* CoreDataExtensions.swift */,
 				63247DB52D4FFD74004883FB /* CoreView.swift */,
 				63241AD02D4EB844000D2730 /* ToDoNotes.xcdatamodeld */,
 			);
@@ -157,7 +158,6 @@
 			isa = PBXGroup;
 			children = (
 				633D77A52D47BDD50082122C /* Extensions.swift */,
-				63247DC52D50072E004883FB /* CoreDataExtensions.swift */,
 				63272CFB2D4BFC28005814CC /* ActivityView.swift */,
 				633D77AE2D47C93E0082122C /* Const.swift */,
 				6347528F2D485612009C6C99 /* ContextMenuTypes.swift */,
