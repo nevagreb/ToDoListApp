@@ -7,7 +7,7 @@
 
 import SwiftUI
 // структура - детальный экран заметки
-struct NoteView: View {
+struct ToDoView: View {
     let note: NotesList.Note?
     @EnvironmentObject var toDoList: ToDoList
     @State private var title: String = ""

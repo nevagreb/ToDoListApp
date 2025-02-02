@@ -11,10 +11,12 @@ import Foundation
 final class ToDoList: ObservableObject {
     @Published var notesList: NotesList
     @Published var router: Router
+    @Published var isFetching: Bool
     
     init(router: Router) {
         self.notesList = NotesList()
         self.router = router
+        self.isFetching = false
     }
     
     // массив задач
@@ -46,6 +48,28 @@ final class ToDoList: ObservableObject {
     // функция формирования задачи как текста
     func returnNoteAsText(with id: UUID) -> String {
         notesList.returnNoteAsText(with: id)
+    }
+}
+
+// функции загрузки с сервера 
+extension ToDoList {
+    @MainActor
+    func featchData() async {
+        isFetching = true
+        guard let url = URL(string: "https://dummyjson.com/todos") else {
+            print("Invalid URL")
+            return
+        }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let decodedResponse = try? JSONDecoder().decode(NotesList.self, from: data) {
+                self.notesList = decodedResponse
+                self.isFetching = false
+            }
+        } catch {
+            print("Invalid data")
+        }
     }
 }
 

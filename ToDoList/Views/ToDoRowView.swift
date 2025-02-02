@@ -10,17 +10,38 @@ import SwiftUI
 // структура - вью строки ToDo-листа
 struct ToDoRowView: View {
     let note: NotesList.Note
-    let tapAction: ()->Void
+    let shareAction: ()->Void
+    @EnvironmentObject var toDoList: ToDoList
     
     var body: some View {
-        HStack(alignment: .top) {
-            // иконка
-            Image(note.isDone ?
-                  Const.Icons.selectedCheckmark : Const.Icons.unselectedCheckmark)
-            .onTapGesture {
-                tapAction()
+        VStack {
+            HStack(alignment: .top) {
+                // буллет
+                Image(note.isDone ?
+                      Const.Icons.selectedCheckmark : Const.Icons.unselectedCheckmark)
+                .onTapGesture {
+                    markAsDone(with: note.id)
+                }
+                toDo
+                    .contextMenu {
+                        ContexMenuButton(type: .edit,
+                                         action: { toDoList.navigate(to: note) })
+                        ContexMenuButton(type: .share,
+                                         action: { shareAction() })
+                        ContexMenuButton(type: .delete,
+                                         action: { toDoList.delete(with: note.id) })
+                    }
             }
-            
+            Divider()
+                .overlay(.gray)
+        }
+        .padding(.top, Const.Layout.padding)
+        .padding(.horizontal)
+    }
+    
+    // задача
+    private var toDo: some View {
+        HStack {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
                     // заголовок
@@ -38,6 +59,7 @@ struct ToDoRowView: View {
                 Text(note.date.formattedAsShortDate())
                     .font(Const.Text.bodyFont)
                     .opacity(0.5)
+                    .padding(.bottom, Const.Layout.padding)
             }
             Spacer()
         }
@@ -56,6 +78,11 @@ struct ToDoRowView: View {
             text.strikethroughColor = .gray
         }
         return text
+    }
+    
+    // функция выбора задачи
+    private func markAsDone(with id: UUID) {
+        toDoList.markAsDone(with: id)
     }
 }
 

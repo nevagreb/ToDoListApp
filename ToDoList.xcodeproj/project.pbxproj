@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		63241AD22D4EB844000D2730 /* ToDoNotes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 63241AD02D4EB844000D2730 /* ToDoNotes.xcdatamodeld */; };
 		63272CFC2D4BFC28005814CC /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63272CFB2D4BFC28005814CC /* ActivityView.swift */; };
 		633D77942D47B4CE0082122C /* ToDoListApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633D77932D47B4CE0082122C /* ToDoListApp.swift */; };
 		633D77962D47B4CE0082122C /* ToDoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633D77952D47B4CE0082122C /* ToDoListView.swift */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		63241AD12D4EB844000D2730 /* ToDoNotes.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ToDoNotes.xcdatamodel; sourceTree = "<group>"; };
 		63272CFB2D4BFC28005814CC /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		633D77902D47B4CE0082122C /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		633D77932D47B4CE0082122C /* ToDoListApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListApp.swift; sourceTree = "<group>"; };
@@ -54,6 +56,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		63241AD32D4EB858000D2730 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				63241AD02D4EB844000D2730 /* ToDoNotes.xcdatamodeld */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
 		63272CFA2D4BF98A005814CC /* Router */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				633D77932D47B4CE0082122C /* ToDoListApp.swift */,
+				63241AD32D4EB858000D2730 /* CoreData */,
 				63272CFA2D4BF98A005814CC /* Router */,
 				633D77AD2D47C79C0082122C /* ViewModel */,
 				633D77AC2D47C78D0082122C /* Model */,
@@ -223,6 +234,7 @@
 				634752902D485612009C6C99 /* ContextMenuTypes.swift in Sources */,
 				63272CFC2D4BFC28005814CC /* ActivityView.swift in Sources */,
 				633D77A42D47B8380082122C /* Note.swift in Sources */,
+				63241AD22D4EB844000D2730 /* ToDoNotes.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +442,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		63241AD02D4EB844000D2730 /* ToDoNotes.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				63241AD12D4EB844000D2730 /* ToDoNotes.xcdatamodel */,
+			);
+			currentVersion = 63241AD12D4EB844000D2730 /* ToDoNotes.xcdatamodel */;
+			path = ToDoNotes.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 633D77882D47B4CE0082122C /* Project object */;
 }

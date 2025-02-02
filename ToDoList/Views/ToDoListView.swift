@@ -12,39 +12,39 @@ struct ToDoListView: View {
     @EnvironmentObject var toDoList: ToDoList
     @State private var searchText = ""
     @State var shareText: ShareText?
-    
+
     var body: some View {
-        listOfToDos
-            .navigationTitle(Const.Layout.titleText)
-            .safeAreaInset(edge: .bottom) {
-                bottomBar
+        VStack {
+            if toDoList.isFetching {
+                ProgressView()
+                Spacer()
+            } else {
+                listOfToDos
+                    .searchable(text: $searchText,
+                                placement: .toolbar)
             }
-            .sheet(item: $shareText, 
-                   content: { shareText in ActivityView(text: shareText.text) })
-            .searchable(text: $searchText,
-                        placement: .toolbar)
+        }
+        .navigationTitle(Const.Layout.titleText)
+        .safeAreaInset(edge: .bottom) {
+            bottomBar
+        }
+        .sheet(item: $shareText,
+               content: { shareText in ActivityView(text: shareText.text) })
     }
     
     // список задач
     private var listOfToDos: some View {
-        List {
-            ForEach(toDoList.notes) { note in
-                ToDoRowView(note: note,
-                            tapAction: { markAsDone(with: note.id) })
-                .onTapGesture(count: 1) {
-                    toDoList.navigate(to: note)
-                }
-                .contextMenu {
-                    ContexMenuButton(type: .edit,
-                                     action: { toDoList.navigate(to: note) })
-                    ContexMenuButton(type: .share,
-                                     action: { share(with: note.id) })
-                    ContexMenuButton(type: .delete,
-                                     action: { toDoList.delete(with: note.id) })
+        ScrollView {
+            LazyVStack {
+                ForEach(toDoList.notes, id: \.id) { note in
+                    ToDoRowView(note: note,
+                                shareAction: { share(with: note.id) })
+                    .onTapGesture(count: 1) {
+                        toDoList.navigate(to: note)
+                    }
                 }
             }
         }
-        .listStyle(.plain)
     }
     
     // боттомбар с форматированным числом задач
@@ -69,11 +69,6 @@ struct ToDoListView: View {
                 Image(Const.Icons.newNote)
             }
         }
-    }
-    
-    // функция выбора задачи
-    private func markAsDone(with id: UUID) {
-        toDoList.markAsDone(with: id)
     }
     
     // функция поделиться задачей

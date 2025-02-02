@@ -8,24 +8,24 @@
 import Foundation
 
 // структура - модель данных для списка задач
-struct NotesList {
+struct NotesList: Decodable {
     var notes: [Note] = []
 
     // инициализация тестовых данных
-    init() {
-        notes.append(Note(title: "Прочитать книгу1",
-                          description: "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике.",
-                          date: .now,
-                          isDone: true))
-        notes.append(Note(title: "Прочитать книгу2",
-                          description: "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике.",
-                          date: .now,
-                          isDone: false))
-        notes.append(Note(title: "Прочитать книгу3",
-                          description: "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике.",
-                          date: .now,
-                          isDone: false))
-    }
+//    init() {
+//        notes.append(Note(title: "Прочитать книгу1",
+//                          description: "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике.",
+//                          date: .now,
+//                          isDone: true))
+//        notes.append(Note(title: "Прочитать книгу2",
+//                          description: "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике.",
+//                          date: .now,
+//                          isDone: false))
+//        notes.append(Note(title: "Прочитать книгу3",
+//                          description: "Составить список необходимых продуктов для ужина. Не забыть проверить, что уже есть в холодильнике.",
+//                          date: .now,
+//                          isDone: false))
+//    }
     
     // функция поиска индекса в массиве по id элемента
     func findIndex(of id: UUID) -> Int? {
@@ -45,7 +45,12 @@ struct NotesList {
         if let id = id {
             update(at: id, with: title, description)
         } else {
-            notes.append(Note(title: title, description: description))
+            let newNote = NotesList.Note(title: title,
+                                         _description: description,
+                                         _date: .now,
+                                         isDone: false,
+                                         userId: 0)
+            notes.append(newNote)
         }
     }
     
@@ -53,7 +58,7 @@ struct NotesList {
     mutating func update(at id: UUID, with title: String, _ description: String) {
         if let index = findIndex(of: id) {
             notes[index].title = title
-            notes[index].description = description
+            notes[index]._description = description
         }
     }
       
@@ -73,15 +78,46 @@ struct NotesList {
     }
     
     // структура - модель данных элемента списка задач
-    struct Note: Identifiable, Hashable {
-        var title: String
-        var description: String
-        var date: Date = .now
-        var isDone: Bool = false
+    struct Note: Identifiable, Hashable, Decodable {
         var id: UUID = UUID()
+        var _id: Int?
+        var title: String
+        var _description: String?
+        var _date: Date?
+        var isDone: Bool
+        var userId: Int
+        
+        var description: String {
+            if let _description = _description {
+                return _description
+            } else {
+                return ""
+            }
+        }
+        
+        var date: Date {
+            if let _date = _date {
+                return _date
+            } else {
+                return .now
+            }
+        }
         
         var noteAsText: String {
             self.title + "\n" + self.date.formattedAsShortDate() + "\n" + self.description
         }
+        
+        enum CodingKeys: String, CodingKey {
+            case _id = "id"
+            case title = "todo"
+            case _description
+            case _date
+            case isDone = "completed"
+            case userId
+        }
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case notes = "todos"
     }
 }

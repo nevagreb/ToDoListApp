@@ -18,7 +18,7 @@ final class Router: ObservableObject {
     
     // метод для перехода на экран детального вида
     func navigate(to note: NotesList.Note) {
-        currentScreen = .toDo(note: note)
+        self.currentScreen = .toDo(note: note)
     }
     
     // метод для перехода на экран новой задачи

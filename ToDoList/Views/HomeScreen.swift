@@ -23,10 +23,13 @@ struct HomeScreen: View {
             case .toDoList:
                 ToDoListView()
             case .toDo(let note):
-                NoteView(note: note)
+                ToDoView(note: note)
             }
         }
         .environmentObject(toDoList)
+        .task {
+            await toDoList.featchData()
+        }
     }
 }
 
