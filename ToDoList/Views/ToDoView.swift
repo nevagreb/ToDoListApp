@@ -8,7 +8,7 @@
 import SwiftUI
 // структура - детальный экран заметки
 struct ToDoView: View {
-    let note: NotesList.Note?
+    let note: ToDoNote
     @EnvironmentObject var toDoList: ToDoList
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var title: String = ""
@@ -19,7 +19,7 @@ struct ToDoView: View {
             TextField(Const.Layout.titlePlaceHolder, text: $title)
                 .font(Const.Text.boldFont)
                 .padding(.bottom, Const.Layout.largePadding)
-            Text(note?.date.formattedAsShortDate() ?? Date.now.formattedAsShortDate())
+            Text(note.date.formattedAsShortDate())
                 .font(Const.Text.bodyFont)
                 .opacity(0.5)
                 .padding(.bottom, Const.Layout.largePadding)
@@ -36,7 +36,13 @@ struct ToDoView: View {
             if isNoteEmpty {
                 delete()
             } else {
-                save()
+                edit()
+            }
+            do {
+                try note.managedObjectContext?.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
     }
@@ -72,21 +78,24 @@ struct ToDoView: View {
     
     // загрузка данных задачи
     private func fetch() {
-        if let note = note {
-            title = note.title
-            description = note.description
+        title = note.title
+        description = note.description
+    }
+    
+    // функция удаления заметки
+    private func delete() {
+        withAnimation {
+            managedObjectContext.delete(note)
+            managedObjectContext.saveContext()
         }
     }
-    
-    // функция сохранения изменений
-    private func save() {
-        toDoList.save(at: note?.id, with: title, description)
-    }
-    
-    // функция удаления задачи
-    private func delete() {
-        if let note = note {
-            toDoList.delete(with: note.id)
+        
+    // функция редактирования заметки
+    private func edit() {
+        withAnimation {
+            note.wrappedTitle = title
+            note.wrappedText = description
+            managedObjectContext.saveContext()
         }
     }
 }

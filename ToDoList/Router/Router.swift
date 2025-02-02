@@ -13,18 +13,18 @@ final class Router: ObservableObject {
     
     enum Screen {
         case toDoList
-        case toDo(note: NotesList.Note?)
+        case toDo(note: ToDoNote)
     }
     
     // метод для перехода на экран детального вида
-    func navigate(to note: NotesList.Note) {
+    func navigate(to note: ToDoNote) {
         self.currentScreen = .toDo(note: note)
     }
-    
-    // метод для перехода на экран новой задачи
-    func navigateToNew() {
-        currentScreen = .toDo(note: nil)
-    }
+//    
+//    // метод для перехода на экран новой задачи
+//    func navigateToNew() {
+//        currentScreen = .toDo(note: nil)
+//    }
     
     // метод для возврата на список задач
     func goBack() {

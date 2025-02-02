@@ -9,20 +9,25 @@ import SwiftUI
 
 // структура - вью списка задач
 struct ToDoListView: View {
+    @FetchRequest(sortDescriptors: [SortDescriptor(\.wrappedTitle)])
+        var todos: FetchedResults<ToDoNote>
+    
     @EnvironmentObject var toDoList: ToDoList
+    @Environment(\.managedObjectContext) var managedObjectContext
+
     @State private var searchText = ""
     @State var shareText: ShareText?
 
     var body: some View {
         VStack {
-            if toDoList.isFetching {
-                ProgressView()
-                Spacer()
-            } else {
+//            if toDoList.isFetching {
+//                ProgressView()
+//                Spacer()
+//            } else {
                 listOfToDos
                     .searchable(text: $searchText,
                                 placement: .toolbar)
-            }
+            //}
         }
         .navigationTitle(Const.Layout.titleText)
         .safeAreaInset(edge: .bottom) {
@@ -36,9 +41,9 @@ struct ToDoListView: View {
     private var listOfToDos: some View {
         ScrollView {
             LazyVStack {
-                ForEach(toDoList.notes, id: \.id) { note in
+                ForEach(todos) { note in
                     ToDoRowView(note: note,
-                                shareAction: { share(with: note.id) })
+                                shareAction: { share(note) })
                     .onTapGesture(count: 1) {
                         toDoList.navigate(to: note)
                     }
@@ -52,7 +57,7 @@ struct ToDoListView: View {
         ZStack {
             HStack {
                 Spacer()
-                Text(toDoList.notes.count.numberToStingInTasks())
+                Text(todos.count.numberToStingInTasks())
                 Spacer()
             }
             newNoteButton
@@ -65,15 +70,25 @@ struct ToDoListView: View {
     private var newNoteButton: some View {
         HStack {
             Spacer()
-            Button(action: toDoList.navigateToNew) {
+            Button(action: addNote) {
                 Image(Const.Icons.newNote)
             }
         }
     }
     
+    private func addNote() {
+        withAnimation {
+            let newNote = ToDoNote(context: managedObjectContext)
+            newNote.createEmptyNote()
+            managedObjectContext.saveContext()
+            toDoList.navigate(to: newNote)
+        }
+    }
+    
     // функция поделиться задачей
-    private func share(with id: UUID) {
-        shareText = ShareText(text: toDoList.returnNoteAsText(with: id))
+    private func share(_ note: ToDoNote) {
+        let sharedText = note.title + "\n" + note.date.formattedAsShortDate() + "\n" + note.description
+        shareText = ShareText(text: sharedText)
     }
 }
 

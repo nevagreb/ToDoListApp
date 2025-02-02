@@ -9,9 +9,10 @@ import SwiftUI
 
 // структура - вью строки ToDo-листа
 struct ToDoRowView: View {
-    let note: NotesList.Note
+    let note: ToDoNote
     let shareAction: ()->Void
     @EnvironmentObject var toDoList: ToDoList
+    @Environment(\.managedObjectContext) var managedObjectContext
     
     var body: some View {
         VStack {
@@ -19,9 +20,7 @@ struct ToDoRowView: View {
                 // буллет
                 Image(note.isDone ?
                       Const.Icons.selectedCheckmark : Const.Icons.unselectedCheckmark)
-                .onTapGesture {
-                    markAsDone(with: note.id)
-                }
+                .onTapGesture(perform: markAsDone)
                 toDo
                     .contextMenu {
                         ContexMenuButton(type: .edit,
@@ -29,7 +28,7 @@ struct ToDoRowView: View {
                         ContexMenuButton(type: .share,
                                          action: { shareAction() })
                         ContexMenuButton(type: .delete,
-                                         action: { toDoList.delete(with: note.id) })
+                                         action: { delete() })
                     }
             }
             Divider()
@@ -71,7 +70,7 @@ struct ToDoRowView: View {
     // функция создания перечеркнутого текста
     // модификатор .strikethrough(note.isSelected) работает в IOS 16 и выше,
     // для создания перечеркнутого текста используется AttributedString
-    private func attributedTitle(of note: NotesList.Note) -> AttributedString {
+    private func attributedTitle(of note: ToDoNote) -> AttributedString {
         var text = AttributedString(note.title)
         if note.isDone {
             text.strikethroughStyle = .single
@@ -80,9 +79,18 @@ struct ToDoRowView: View {
         return text
     }
     
-    // функция выбора задачи
-    private func markAsDone(with id: UUID) {
-        toDoList.markAsDone(with: id)
+    private func delete() {
+        withAnimation {
+            managedObjectContext.delete(note)
+            managedObjectContext.saveContext()
+        }
+    }
+        
+    private func markAsDone() {
+        withAnimation {
+            note.wrappedIsDone.toggle()
+            managedObjectContext.saveContext()
+        }
     }
 }
 

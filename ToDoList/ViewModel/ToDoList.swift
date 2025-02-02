@@ -19,40 +19,8 @@ final class ToDoList: ObservableObject {
         self.isFetching = false
     }
     
-    // массив задач
-    var notes: [NotesList.Note] {
-        notesList.notes
-    }
-    
     // MARK: - Intent(s)
-    // функция для отметки задачи как выполненной по id
-    func markAsDone(with id: UUID) {
-        notesList.markAsDone(with: id)
-    }
-    
-    // функция поиска индекса элемента массива по его id
-    func findIndex(of id: UUID) -> Int? {
-        notesList.findIndex(of: id)
-    }
-    
-    // функция сохранения изменений
-    func save(at id: UUID?, with title: String, _ description: String) {
-        notesList.save(at: id, with: title, description)
-    }
-    
-    // функция удаления элемента массива по его id
-    func delete(with id: UUID) {
-        notesList.delete(with: id)
-    }
-    
-    // функция формирования задачи как текста
-    func returnNoteAsText(with id: UUID) -> String {
-        notesList.returnNoteAsText(with: id)
-    }
-}
-
-// функции загрузки с сервера 
-extension ToDoList {
+    // функции загрузки с сервера 
     @MainActor
     func featchData() async {
         isFetching = true
@@ -76,14 +44,14 @@ extension ToDoList {
 // функции навигации
 extension ToDoList {
     // функция перехода к детальному виду
-    func navigate(to note: NotesList.Note) {
+    func navigate(to note: ToDoNote) {
         router.navigate(to: note)
     }
     
-    // функция перехода к новой задаче
-    func navigateToNew() {
-        router.navigateToNew()
-    }
+//    // функция перехода к новой задаче
+//    func navigateToNew() {
+//        router.navigateToNew()
+//    }
     
     // функция возврата к списку задач
     func goBack() {
