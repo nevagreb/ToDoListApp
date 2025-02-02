@@ -10,6 +10,7 @@ import SwiftUI
 struct ToDoView: View {
     let note: NotesList.Note?
     @EnvironmentObject var toDoList: ToDoList
+    @Environment(\.managedObjectContext) var managedObjectContext
     @State private var title: String = ""
     @State private var description: String = ""
     

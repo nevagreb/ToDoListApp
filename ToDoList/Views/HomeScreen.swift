@@ -27,9 +27,9 @@ struct HomeScreen: View {
             }
         }
         .environmentObject(toDoList)
-        .task {
-            await toDoList.featchData()
-        }
+//        .task {
+//            await toDoList.featchData()
+//        }
     }
 }
 
