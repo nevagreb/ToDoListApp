@@ -15,9 +15,21 @@ struct ToDoView: View {
     @State private var description: String = ""
     
     var body: some View {
+        ScrollView {
+            noteView
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: backButton)
+        .onAppear(perform: showNote)
+        .onDisappear(perform: saveChanges)
+    }
+    
+    private var noteView: some View {
         VStack(alignment: .leading) {
             TextField(Const.Layout.titlePlaceHolder, text: $title)
                 .font(Const.Text.boldFont)
+                .lineLimit(nil)
                 .padding(.bottom, Const.Layout.largePadding)
             Text(note.date.formattedAsShortDate())
                 .font(Const.Text.bodyFont)
@@ -26,25 +38,6 @@ struct ToDoView: View {
             noteText
         }
         .padding()
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: backButton)
-        .onAppear {
-            fetch()
-        }
-        .onDisappear {
-            if isNoteEmpty {
-                delete()
-            } else {
-                edit()
-            }
-            do {
-                try note.managedObjectContext?.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
     }
     
     // текст эдитор для текста заметки с кастомным плэйсхолдером
@@ -76,10 +69,25 @@ struct ToDoView: View {
         title.isEmpty && description.isEmpty
     }
     
-    // загрузка данных задачи
-    private func fetch() {
+    // функция для отображения данных заметки на экране
+    private func showNote() {
         title = note.title
-        description = note.description
+        description = note.text
+    }
+    
+    // функция сохранения измнений
+    private func saveChanges() {
+        if isNoteEmpty {
+            delete()
+        } else {
+            edit()
+        }
+        do {
+            try note.managedObjectContext?.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
     }
     
     // функция удаления заметки

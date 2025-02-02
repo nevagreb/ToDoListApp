@@ -20,21 +20,27 @@ struct ToDoListView: View {
 
     var body: some View {
         VStack {
-//            if toDoList.isFetching {
-//                ProgressView()
-//                Spacer()
-//            } else {
+            if toDoList.isFetching {
+                ProgressView()
+                Spacer()
+            } else {
                 listOfToDos
-                    .searchable(text: $searchText,
-                                placement: .toolbar)
-            //}
+            }
         }
         .navigationTitle(Const.Layout.titleText)
+        .searchable(text: $searchText,
+                    placement: .toolbar)
         .safeAreaInset(edge: .bottom) {
             bottomBar
         }
         .sheet(item: $shareText,
                content: { shareText in ActivityView(text: shareText.text) })
+        .task {
+            if todos.isEmpty {
+                await toDoList.featchData()
+                addNotesFromServer()
+            }
+        }
     }
     
     // список задач
@@ -76,6 +82,7 @@ struct ToDoListView: View {
         }
     }
     
+    // функция создания новой заметки
     private func addNote() {
         withAnimation {
             let newNote = ToDoNote(context: managedObjectContext)
@@ -87,8 +94,16 @@ struct ToDoListView: View {
     
     // функция поделиться задачей
     private func share(_ note: ToDoNote) {
-        let sharedText = note.title + "\n" + note.date.formattedAsShortDate() + "\n" + note.description
+        let sharedText = note.title + "\n" + note.date.formattedAsShortDate() + "\n" + note.text
         shareText = ShareText(text: sharedText)
+    }
+    
+    // функция добавления в МОК загруженных с сервера задач
+    func addNotesFromServer() {
+        toDoList.notesList.notes.forEach {
+            let newNote = ToDoNote(context: managedObjectContext)
+            newNote.addInfo(from: $0)
+        }
     }
 }
 

@@ -48,7 +48,7 @@ struct ToDoRowView: View {
                         .font(Const.Text.titleFont)
                         .padding(.bottom, Const.Layout.padding)
                     // текст задачи
-                    Text(note.description)
+                    Text(note.text)
                         .font(Const.Text.bodyFont)
                         .lineLimit(2)
                         .padding(.bottom, Const.Layout.padding)
