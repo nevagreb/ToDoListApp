@@ -18,7 +18,9 @@ struct ToDoListApp: App {
             HomeScreen(router: router)
                 .preferredColorScheme(.dark)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.managedObjectContext, persistenceController.container.newBackgroundContext())
         }
+        // сохранение при изменении scenePhase
         .onChange(of: scenePhase) { _ in
             persistenceController.save()
         }

@@ -9,15 +9,20 @@ import SwiftUI
 
 // структура - вью списка задач
 struct ToDoListView: View {
+    // фетчреквест для CoreData
     @FetchRequest(sortDescriptors: [SortDescriptor(\ToDoNote.wrappedDate, order: .reverse)])
         private var todos: FetchedResults<ToDoNote>
     
     @EnvironmentObject var toDoList: ToDoList
+    // 2 контекста: 1 - работа с UI, 2 - работа в фоне
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var backgroundContext
 
     @State private var searchText = ""
     @State var shareText: ShareText?
     
+    // свойство используется для поиска по содержимому задачи
+        // и ее описания
     var query: Binding<String> {
         Binding {
             searchText
@@ -100,7 +105,7 @@ struct ToDoListView: View {
     // функция создания новой заметки
     private func addNote() {
         withAnimation {
-            let newNote = managedObjectContext.addNewNote()
+            let newNote = backgroundContext.addNewNote()
             toDoList.navigate(to: newNote)
         }
     }
@@ -113,7 +118,7 @@ struct ToDoListView: View {
     
     // функция добавления в МОК загруженных с сервера задач
     func addNotesFromServer() {
-        managedObjectContext.addNotesFromServer(toDoList.notesList)
+        backgroundContext.addNotesFromServer(toDoList.notesList)
     }
 }
 

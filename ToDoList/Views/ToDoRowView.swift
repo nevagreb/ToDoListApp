@@ -13,6 +13,7 @@ struct ToDoRowView: View {
     let shareAction: ()->Void
     @EnvironmentObject var toDoList: ToDoList
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var backgroundContext
     
     var body: some View {
         VStack {
@@ -81,15 +82,15 @@ struct ToDoRowView: View {
     
     private func delete() {
         withAnimation {
-            managedObjectContext.delete(note)
-            managedObjectContext.saveContext()
+            backgroundContext.delete(note)
+            backgroundContext.saveContext()
         }
     }
         
     private func markAsDone() {
         withAnimation {
             note.wrappedIsDone.toggle()
-            managedObjectContext.saveContext()
+            backgroundContext.saveContext()
         }
     }
 }

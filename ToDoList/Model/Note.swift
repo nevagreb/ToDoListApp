@@ -7,7 +7,7 @@
 
 import Foundation
 
-// структура - модель данных для списка задач
+// стуктура - модель данных для работы с сетью
 struct NotesList: Decodable {
     var notes: [Note] = []
     

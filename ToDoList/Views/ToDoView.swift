@@ -10,7 +10,9 @@ import SwiftUI
 struct ToDoView: View {
     let note: ToDoNote
     @EnvironmentObject var toDoList: ToDoList
+    // 2 контекста: 1 - работа с UI, 2 - работа в фоне
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var backgroundContext
     @State private var title: String = ""
     @State private var description: String = ""
     
@@ -26,6 +28,7 @@ struct ToDoView: View {
         .onDisappear(perform: saveChanges)
     }
     
+    // задача с тремя полями: заголовок, дата и описание
     private var noteView: some View {
         VStack(alignment: .leading) {
             TextField(Const.Layout.titlePlaceHolder, text: $title)
@@ -102,7 +105,7 @@ struct ToDoView: View {
     
     // функция удаления заметки
     private func delete() {
-        managedObjectContext.delete(note: note)
+        backgroundContext.delete(note: note)
     }
         
     // функция редактирования заметки
@@ -110,7 +113,7 @@ struct ToDoView: View {
         withAnimation {
             note.wrappedTitle = title
             note.wrappedText = description
-            managedObjectContext.saveContext()
+            backgroundContext.saveContext()
         }
     }
 }
