@@ -2,13 +2,12 @@
 //  ToDoNote+CoreDataProperties.swift
 //  ToDoList
 //
-//  Created by Kristina Grebneva on 02.02.2025.
+//  Created by Kristina Grebneva on 03.02.2025.
 //
 //
 
 import Foundation
 import CoreData
-
 
 extension ToDoNote {
 

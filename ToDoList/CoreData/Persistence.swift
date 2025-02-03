@@ -13,7 +13,7 @@ struct PersistenceController {
     static let shared = PersistenceController()
     // контейнер для Core Data
     let container: NSPersistentContainer
-
+    
     init() {
         container = NSPersistentContainer(name: "ToDoNotes")
         container.loadPersistentStores { (persistent, error) in
@@ -29,7 +29,7 @@ struct PersistenceController {
     // функция созранения данных
     func save() {
         let context = container.viewContext
-
+        
         if context.hasChanges {
             do {
                 try context.save()
@@ -40,16 +40,16 @@ struct PersistenceController {
     }
     
     func saveChanges(with context: NSManagedObjectContext) {
-            context.performAndWait {
-                if context.hasChanges {
-                    do {
-                        try context.save()
-                    } catch {
-                        context.rollback()
-                    }
+        context.performAndWait {
+            if context.hasChanges {
+                do {
+                    try context.save()
+                } catch {
+                    context.rollback()
                 }
-                context.reset()
             }
+            context.reset()
         }
+    }
 }
 

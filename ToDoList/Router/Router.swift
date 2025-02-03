@@ -8,7 +8,7 @@
 import SwiftUI
 
 // класс - роутер для навигации
-final class Router: ObservableObject {
+class Router: ObservableObject {
     @Published var currentScreen: Screen = .toDoList
     
     enum Screen {

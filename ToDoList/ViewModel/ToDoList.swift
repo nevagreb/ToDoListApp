@@ -48,11 +48,6 @@ extension ToDoList {
         router.navigate(to: note)
     }
     
-//    // функция перехода к новой задаче
-//    func navigateToNew() {
-//        router.navigateToNew()
-//    }
-    
     // функция возврата к списку задач
     func goBack() {
         router.goBack()
