@@ -11,9 +11,20 @@ import SwiftUI
 class Router: ObservableObject {
     @Published var currentScreen: Screen = .toDoList
     
-    enum Screen {
+    enum Screen: Equatable {
         case toDoList
         case toDo(note: ToDoNote)
+        
+        static func ==(lhs: Screen, rhs: Screen) -> Bool {
+            switch (lhs, rhs) {
+            case (.toDoList, .toDoList):
+                return true
+            case (.toDo(let lhsNote), .toDo(let rhsNote)):
+                return lhsNote == rhsNote // Assuming ToDoNote conforms to Equatable
+            default:
+                return false
+            }
+        }
     }
     
     // метод для перехода на экран детального вида

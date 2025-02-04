@@ -27,7 +27,7 @@
 		6358F61A2D50F1D200F86178 /* Presenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6358F6192D50F1D200F86178 /* Presenter.swift */; };
 		6358F61C2D50F74900F86178 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6358F61B2D50F74900F86178 /* CoreDataStack.swift */; };
 		636E8CFD2D518D5100E805FE /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636E8CFC2D518D5100E805FE /* Router.swift */; };
-		637B43CA2D503A7300841C1C /* ToDoListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637B43C92D503A7300841C1C /* ToDoListTests.swift */; };
+		637B43CA2D503A7300841C1C /* RouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637B43C92D503A7300841C1C /* RouterTests.swift */; };
 		637B43D32D503AEE00841C1C /* CoreDataTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637B43D22D503AEE00841C1C /* CoreDataTest.swift */; };
 		63ECBADD2D51A8110024A168 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63ECBADC2D51A8110024A168 /* NetworkService.swift */; };
 		63F4C1012D504EA300081DEA /* ToDoNote+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F4C0FF2D504EA300081DEA /* ToDoNote+CoreDataClass.swift */; };
@@ -67,7 +67,7 @@
 		6358F61B2D50F74900F86178 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		636E8CFC2D518D5100E805FE /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		637B43C72D503A7300841C1C /* ToDoListTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToDoListTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		637B43C92D503A7300841C1C /* ToDoListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListTests.swift; sourceTree = "<group>"; };
+		637B43C92D503A7300841C1C /* RouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		637B43D22D503AEE00841C1C /* CoreDataTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTest.swift; sourceTree = "<group>"; };
 		63ECBADC2D51A8110024A168 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		63F4C0FF2D504EA300081DEA /* ToDoNote+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToDoNote+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -190,7 +190,7 @@
 		637B43C82D503A7300841C1C /* ToDoListTests */ = {
 			isa = PBXGroup;
 			children = (
-				637B43C92D503A7300841C1C /* ToDoListTests.swift */,
+				637B43C92D503A7300841C1C /* RouterTests.swift */,
 				637B43D22D503AEE00841C1C /* CoreDataTest.swift */,
 			);
 			path = ToDoListTests;
@@ -342,7 +342,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				637B43D32D503AEE00841C1C /* CoreDataTest.swift in Sources */,
-				637B43CA2D503A7300841C1C /* ToDoListTests.swift in Sources */,
+				637B43CA2D503A7300841C1C /* RouterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
