@@ -9,24 +9,25 @@ import SwiftUI
 
 // структура - домашний экран со списком задач и навигацией
 struct HomeScreen: View {
-    @StateObject private var router: Router
-    @StateObject private var toDoList: ToDoList
+    @StateObject var dataModel: CoreDataStack
+    @StateObject var presenter: Presenter
+    @StateObject private var router: Router = Router()
 
-    init(router: Router) {
-        _router = StateObject(wrappedValue: router)
-        _toDoList = StateObject(wrappedValue: ToDoList(router: router))
+    init(router: Router, dataModel: CoreDataStack) {
+        _dataModel = StateObject(wrappedValue: dataModel)
+        _presenter = StateObject(wrappedValue: Presenter(interactor: Interactor(model: dataModel), router: router))
     }
     
     var body: some View {
         NavigationView {
-            switch toDoList.router.currentScreen {
+            switch presenter.currentScreen {
             case .toDoList:
                 ToDoListView()
             case .toDo(let note):
                 ToDoView(note: note)
             }
         }
-        .environmentObject(toDoList)
+        .environmentObject(presenter)
     }
 }
 

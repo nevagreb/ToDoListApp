@@ -10,15 +10,13 @@ import SwiftUI
 @main
 struct ToDoListApp: App {
     @StateObject var router = Router()
-    @Environment(\.scenePhase) var scenePhase
     let persistenceController = PersistenceController.shared
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some Scene {
         WindowGroup {
-            HomeScreen(router: router)
+            HomeScreen(router: router, dataModel: CoreDataStack(context: persistenceController.container.viewContext))
                 .preferredColorScheme(.dark)
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .environment(\.managedObjectContext, persistenceController.container.newBackgroundContext())
         }
         // сохранение при изменении scenePhase
         .onChange(of: scenePhase) { _ in

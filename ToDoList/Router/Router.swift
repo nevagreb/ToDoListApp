@@ -2,12 +2,12 @@
 //  Router.swift
 //  ToDoList
 //
-//  Created by Kristina Grebneva on 28.01.2025.
+//  Created by Kristina Grebneva on 04.02.2025.
 //
 
 import SwiftUI
 
-// класс - роутер для навигации
+// класс - роутер, обеспечивает навигацию
 class Router: ObservableObject {
     @Published var currentScreen: Screen = .toDoList
     
@@ -20,11 +20,6 @@ class Router: ObservableObject {
     func navigate(to note: ToDoNote) {
         self.currentScreen = .toDo(note: note)
     }
-//    
-//    // метод для перехода на экран новой задачи
-//    func navigateToNew() {
-//        currentScreen = .toDo(note: nil)
-//    }
     
     // метод для возврата на список задач
     func goBack() {

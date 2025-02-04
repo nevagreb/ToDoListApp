@@ -8,11 +8,9 @@
 import SwiftUI
 // структура - детальный экран заметки
 struct ToDoView: View {
+    @EnvironmentObject var presenter: Presenter
+
     let note: ToDoNote
-    @EnvironmentObject var toDoList: ToDoList
-    // 2 контекста: 1 - работа с UI, 2 - работа в фоне
-    @Environment(\.managedObjectContext) var managedObjectContext
-    @Environment(\.managedObjectContext) var backgroundContext
     @State private var title: String = ""
     @State private var description: String = ""
     
@@ -62,7 +60,7 @@ struct ToDoView: View {
     
     // кастомная кнопка возвращения назад
     private var backButton: some View {
-        Button(action: { toDoList.goBack() }) {
+        Button(action: { presenter.goBack() }) {
             HStack {
                 Image(Const.Icons.back)
                 Text(Const.Layout.backButtonTitle)
@@ -105,15 +103,11 @@ struct ToDoView: View {
     
     // функция удаления заметки
     private func delete() {
-        backgroundContext.delete(note: note)
+        presenter.delete(note)
     }
         
     // функция редактирования заметки
     private func edit() {
-        withAnimation {
-            note.wrappedTitle = title
-            note.wrappedText = description
-            backgroundContext.saveContext()
-        }
+        presenter.edit(note, title: title, description: description)
     }
 }

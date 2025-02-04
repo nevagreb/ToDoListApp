@@ -9,11 +9,10 @@ import SwiftUI
 
 // структура - вью строки ToDo-листа
 struct ToDoRowView: View {
+    @EnvironmentObject var presenter: Presenter
+    
     let note: ToDoNote
     let shareAction: ()->Void
-    @EnvironmentObject var toDoList: ToDoList
-    @Environment(\.managedObjectContext) var managedObjectContext
-    @Environment(\.managedObjectContext) var backgroundContext
     
     var body: some View {
         VStack {
@@ -25,7 +24,7 @@ struct ToDoRowView: View {
                 toDo
                     .contextMenu {
                         ContexMenuButton(type: .edit,
-                                         action: { toDoList.navigate(to: note) })
+                                         action: { presenter.navigate(to: note) })
                         ContexMenuButton(type: .share,
                                          action: { shareAction() })
                         ContexMenuButton(type: .delete,
@@ -80,17 +79,17 @@ struct ToDoRowView: View {
         return text
     }
     
+    // фукнция удаления задачи
     private func delete() {
         withAnimation {
-            backgroundContext.delete(note)
-            backgroundContext.saveContext()
+            presenter.delete(note)
         }
     }
-        
+    
+    // функция отмечает задачу как выполненную
     private func markAsDone() {
         withAnimation {
-            note.wrappedIsDone.toggle()
-            backgroundContext.saveContext()
+            presenter.markAsDone(note)
         }
     }
 }
