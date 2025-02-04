@@ -10,40 +10,66 @@ import Combine
 
 // класс для управления взаимодействием с CoreData
 class CoreDataStack: ObservableObject {
-    private var managedObjectContext: NSManagedObjectContext
+    // контекст для работы с UI
+    private var mainContext: NSManagedObjectContext
+    // контекст для фоновых операций
+    private var backgroundContext: NSManagedObjectContext
     @Published var notes: [ToDoNote] = []
     
     init(context: NSManagedObjectContext) {
-        self.managedObjectContext = context
+        self.mainContext = context
+        self.backgroundContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        self.backgroundContext.parent = context
         publish()
     }
     
     // функция фетчинга данных из CoreData
     private func allNotes() -> [ToDoNote] {
-        do {
-            let fetchRequest : NSFetchRequest<ToDoNote> = ToDoNote.fetchRequest()
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "wrappedDate", ascending: false)]
-            return try self.managedObjectContext.fetch(fetchRequest)
-        } catch let error as NSError {
-            print("\(error), \(error.userInfo)")
-            return []
+        var fetchedNotes: [ToDoNote] = []
+        let fetchRequest: NSFetchRequest<ToDoNote> = ToDoNote.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "wrappedDate", ascending: false)]
+        
+        // выполнение запроса в фоновом потоке
+        backgroundContext.performAndWait {
+            do {
+                fetchedNotes = try self.backgroundContext.fetch(fetchRequest)
+            } catch let error as NSError {
+                print("\(error), \(error.userInfo)")
+            }
         }
+        return fetchedNotes
     }
     
     // функция сохранения
     private func save() {
-        do {
-            try self.managedObjectContext.save()
-        } catch let error as NSError {
-            print("\(error), \(error.userInfo)")
+        // выполнение сохранения в фоновом потоке
+        backgroundContext.perform {
+            do {
+                try self.backgroundContext.save()
+                // перенос изменений в основной контекст
+                self.mainContext.perform {
+                    do {
+                        try self.mainContext.save()
+                        self.publish()
+                    } catch {
+                        print("Ошибка сохранения в mainContext: \(error)")
+                    }
+                }
+            } catch let error as NSError {
+                print("\(error), \(error.userInfo)")
+            }
         }
-        publish()
     }
     
     // функция удаления всех заметок
     func removeAllNotes() {
-        allNotes().forEach { object in managedObjectContext.delete(object) }
-        save()
+        // выполнение удаления в фоновом потоке
+        backgroundContext.performAndWait {
+            self.allNotes().forEach { object in
+                self.backgroundContext.delete(object)
+            }
+            self.save()
+        }
     }
     
     // функция обновления массива
@@ -56,55 +82,75 @@ class CoreDataStack: ObservableObject {
     
     // функция создания новой задачи
     func addNewNote() -> ToDoNote {
-        let note = managedObjectContext.addNewNote()
-        save()
-        return note
+        var newNote: ToDoNote!
+        // выполнение в фоновом потоке
+        backgroundContext.performAndWait {
+            newNote = self.backgroundContext.addNewNote()
+            self.save()
+        }
+        
+        return newNote
     }
     
     // функция удаления задачи
     func delete(_ note: ToDoNote) {
-        managedObjectContext.delete(note: note)
-        save()
+        // выполнение удаления в фоновом потоке
+        backgroundContext.performAndWait {
+            self.backgroundContext.delete(note)
+            self.save()
+        }
     }
     
     // функция добавления в МОК загруженных с сервера задач
     func addNotesFromServer(_ notesList: NotesList) {
-        notesList.notes.forEach {
-            let newNote = ToDoNote(context: managedObjectContext)
-            newNote.addInfo(from: $0)
+        // выполнение в фоновом потоке
+        backgroundContext.performAndWait {
+            notesList.notes.forEach {
+                let newNote = ToDoNote(context: self.backgroundContext)
+                newNote.addInfo(from: $0)
+            }
+            self.save()
         }
-        save()
     }
     
     // функция отметки задачи как выполненной
     func markAsDone(_ note: ToDoNote) {
-        note.wrappedIsDone.toggle()
-        save()
+        // выполнение в фоновом потоке
+        backgroundContext.performAndWait {
+            note.wrappedIsDone.toggle()
+            self.save()
+        }
     }
     
     // функция редактирования задачи
     func edit(_ note: ToDoNote, title: String, description: String) {
-        note.wrappedTitle = title
-        note.wrappedText = description
-        save()
+        // выполнение редактирования в фоновом потоке
+        backgroundContext.performAndWait {
+            note.wrappedTitle = title
+            note.wrappedText = description
+            self.save()
+        }
     }
     
     // функция добавления в CoreData задач, загруженных с сервера
     func fetchNotes(query: String?) {
-        do {
-            let fetchRequest: NSFetchRequest<ToDoNote> = ToDoNote.fetchRequest()
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "wrappedDate", ascending: false)]
-            
-            if let query = query, !query.isEmpty {
-                let p1 = NSPredicate(format: "wrappedTitle CONTAINS[cd] %@", query)
-                let p2 = NSPredicate(format: "wrappedText CONTAINS[cd] %@", query)
-                fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [p1, p2])
+        // добавление задач в фоновом потоке
+        backgroundContext.performAndWait {
+            do {
+                let fetchRequest: NSFetchRequest<ToDoNote> = ToDoNote.fetchRequest()
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "wrappedDate", ascending: false)]
+                
+                if let query = query, !query.isEmpty {
+                    let p1 = NSPredicate(format: "wrappedTitle CONTAINS[cd] %@", query)
+                    let p2 = NSPredicate(format: "wrappedText CONTAINS[cd] %@", query)
+                    fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [p1, p2])
+                }
+                
+                self.notes = try self.backgroundContext.fetch(fetchRequest)
+            } catch {
+                print("Ошибка загрузки данных: \(error)")
+                self.notes = []
             }
-            
-            self.notes = try self.managedObjectContext.fetch(fetchRequest)
-        } catch {
-            print("Ошибка загрузки данных: \(error)")
-            self.notes = []
         }
     }
 }
